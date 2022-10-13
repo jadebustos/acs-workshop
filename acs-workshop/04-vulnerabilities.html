@@ -139,6 +139,9 @@
     <a class="nav-link" href="#scanning_images">Scanning images for vulnerabilities</a>
   </li>
   <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#filtering_vulnerabilities_scans">Filtering vulnerabilities scans</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#review_cve_images">Image CVE Vulnerability Analysis</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -513,7 +516,7 @@ if you don&#8217;t have the exact image in the Top Riskiest Images, go to "View 
 </div>
 </div>
 <div class="paragraph">
-<p>Only active images will be scanned for vulnerabilities. If we want to scan inactive images we will need to mark the image as watched so you will need to click on <strong>Manage Watches</strong>:</p>
+<p>Only active images will be scanned for vulnerabilities. If we want to scan inactive images we will need to mark the image as watched, so you will need to click on <strong>Manage Watches</strong>:</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -527,6 +530,38 @@ if you don&#8217;t have the exact image in the Top Riskiest Images, go to "View 
 <div class="content">
 <img src="_images/vulnerabilities/02-inactive.png" alt="ActiveInactive" width="700">
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="filtering_vulnerabilities_scans"><a class="anchor" href="#filtering_vulnerabilities_scans"></a>Filtering vulnerabilities scans</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Using the search box we can filter the results for the vulnerabilities scan:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vulnerabilities/01-filter.png" alt="ActiveInactive" width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>As usual que can use some tags to filter, as <strong>CVE</strong>, <strong>CVE Type</strong>, &#8230;&#8203;</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vulnerabilities/02-filter.png" alt="ActiveInactive" width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>We can use regular expresions as well. For instance, we are not usually interested in inactive images due to there is no deployment using it. For this reason we are not probably interested in check the vulneratilities for the inactive images so we can filter using <strong>Deployment r/.+</strong>. That means to list all the images where the deployment field is not empth, i.e. active images:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/vulnerabilities/03-filter.png" alt="ActiveInactive" width="700">
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see only the active images are displayed to check the vulnerabilities.</p>
 </div>
 </div>
 </div>
