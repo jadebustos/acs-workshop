@@ -537,6 +537,18 @@ This step is not required if you are using the Cloud Service for Red Hat Advance
 <div class="paragraph">
 <p>Central uses a database referred as Central DB (PostgreSQL 13) and both Central and PostgreSQL require persistent storage. SSD storage is recommended for best performance but different storage can be used as well.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Using an external database is currently a Technology Preview and will not be covered in this workshop.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>RHACS requires external access to:</p>
 </div>
@@ -553,6 +565,101 @@ This step is not required if you are using the Cloud Service for Red Hat Advance
 </div>
 <div class="sect2">
 <h3 id="_rhacs_central_deployment"><a class="anchor" href="#_rhacs_central_deployment"></a>RHACS Central deployment</h3>
+<div class="paragraph">
+<p>RHACS Central deployment can be performed in several ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#install_acs_central_web_console">Deploying Central using the ACS Operator (Web Console)</a></p>
+</li>
+<li>
+<p>Using oc client (CLI)</p>
+</li>
+<li>
+<p>Using roxctl (CLI)</p>
+</li>
+<li>
+<p>Using Helm Charts</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This step is not required if you are using the Cloud Service for Red Hat Advanced Cluster Security for Kubernetes (ACS).
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="install_acs_central_web_console"><a class="anchor" href="#install_acs_central_web_console"></a>Deploying Central using the ACS Operator (Web Console)</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>From the operator <em>ready screen</em> by clicking on <code>View Operator</code> or navigating to the <strong>Operators → Installed Operators</strong> page. Then, under the <strong>Provided APIs</strong> section, select <code>Create Central</code> on the <code>Central</code> API:</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/install/04_1_create_central_resource.png" alt="ACS Operator 51" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>Check the <code>YAML</code> radio button and paste the <code>Central</code> CR you see below and click on the <code>Create</code> button.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/install/04_2_create_central_resource.png" alt="ACS Operator 52" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>You can check the progress by switching to the <code>Developer</code> perspective, in the <code>Topology</code> menu.</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/install/04_3_create_central_resource.png" alt="ACS Operator 53" width="800">
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You can also do the same using the <code>Developer</code> perspective:</p>
+</div>
+<div class="paragraph">
+<p>+
+image::install/04_3_create_central_resource.png[ACS Operator 53, 800]</p>
+</div>
+<div class="paragraph">
+<p>You can also do the same using the <code>Developer</code> perspective:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Within the <code>stackrock</code> project selected, <strong>+Add → Import YAML</strong></p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/install/04_11_create_central_resource.png" alt="ACS Operator 511" width="800">
+</div>
+</div>
+</li>
+<li>
+<p>Paste the YAML content and click on the <code>Create</code> button:</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/install/04_22_create_central_resource.png" alt="ACS Operator 512" width="800">
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="install_acs_central_oc_client"><a class="anchor" href="#install_acs_central_oc_client"></a>Deploying Central using the oc client (CLI)</h3>
 <div class="paragraph">
 <p>Log in to your OpenShift cluster and create a new <code>stackrox</code> namespace (using the web console or the cli as follows). We will install our components here.</p>
 </div>
@@ -596,75 +703,6 @@ spec:
     scannerComponent: Enabled</code></pre>
 </div>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-This step is not required if you are using the Cloud Service for Red Hat Advanced Cluster Security for Kubernetes (ACS).
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="install_acs_central_web_console"><a class="anchor" href="#install_acs_central_web_console"></a>With Web Console</h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>From the operator <em>ready screen</em> by clicking on <code>View Operator</code> or navigating to the <strong>Operators → Installed Operators</strong> page. Then, under the <strong>Provided APIs</strong> section, select <code>Create Central</code> on the <code>Central</code> API:</p>
-<div class="imageblock">
-<div class="content">
-<img src="_images/install/04_1_create_central_resource.png" alt="ACS Operator 51" width="800">
-</div>
-</div>
-</li>
-<li>
-<p>Check the <code>YAML</code> radio button and paste the <code>Central</code> CR you see below and click on the <code>Create</code> button.</p>
-<div class="imageblock">
-<div class="content">
-<img src="_images/install/04_2_create_central_resource.png" alt="ACS Operator 52" width="800">
-</div>
-</div>
-</li>
-<li>
-<p>You can check the progress by switching to the <code>Developer</code> perspective, in the <code>Topology</code> menu.</p>
-<div class="imageblock">
-<div class="content">
-<img src="_images/install/04_3_create_central_resource.png" alt="ACS Operator 53" width="800">
-</div>
-</div>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>You can also do the same using the <code>Developer</code> perspective:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Within the <code>stackrock</code> project selected, <strong>+Add → Import YAML</strong></p>
-<div class="imageblock">
-<div class="content">
-<img src="_images/install/04_11_create_central_resource.png" alt="ACS Operator 511" width="800">
-</div>
-</div>
-</li>
-<li>
-<p>Paste the YAML content and click on the <code>Create</code> button:</p>
-<div class="imageblock">
-<div class="content">
-<img src="_images/install/04_22_create_central_resource.png" alt="ACS Operator 512" width="800">
-</div>
-</div>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="install_acs_central_oc_client"><a class="anchor" href="#install_acs_central_oc_client"></a>With OC client</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
