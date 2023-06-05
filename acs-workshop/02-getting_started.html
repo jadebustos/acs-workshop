@@ -85,6 +85,9 @@
     <a class="nav-link" href="02-getting_started.html">Getting Started</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#rhacs_components">RHACS Components</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#install_acs_operator">Install RHACS Operator</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -403,6 +406,45 @@ You can request in RHPDS the environment already installed (including the demo) 
 </div>
 </div>
 <div class="sect1">
+<h2 id="rhacs_components"><a class="anchor" href="#rhacs_components"></a>RHACS Components</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Red Hat Advanced Cluster Security for Kubernetes (ACS) consists of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>Central</code> service, which exposes api and console and communicates with Sensors on secured clusters.</p>
+</li>
+<li>
+<p>The <code>Scanner</code> service, which has the role of scanning the deployed pods images.</p>
+</li>
+<li>
+<p>The <code>Sensor</code>, which monitors your Kubernetes and OpenShift Container Platform clusters.</p>
+</li>
+<li>
+<p>The <code>Admision Controller</code> which prevent users from creating workloads that violate configured security policies.</p>
+</li>
+<li>
+<p>The <code>Collector</code> which moniotrs runtime activity on each node for your secured clusters. It reports to <strong>Sensor</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You should check the specific version for you RHACS version to check memory/storage requirements ACS components and the sizing guidelines as well.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="install_acs_operator"><a class="anchor" href="#install_acs_operator"></a>RHACS Operator Installation</h2>
 <div class="sectionbody">
 <div class="olist arabic">
@@ -457,11 +499,26 @@ You can request in RHPDS the environment already installed (including the demo) 
 </li>
 </ol>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This step is not required if you are using the Cloud Service for Red Hat Advanced Cluster Security for Kubernetes (ACS).
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="install_acs_central"><a class="anchor" href="#install_acs_central"></a>RHACS Central Cluster Installation</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Once the operator has been installed we need to deploy the Central component. This component must be deployed in Red Hat OpenShift 4.9 or higher. However, it can be deployed in Kubernetes but you must carefully read <a href="https://access.redhat.com/node/5822721">Red Hat Advanced Cluster Security for Kubernetes Support Policy</a>.</p>
+</div>
 <div class="paragraph">
 <p>In this section we will deploy the Central component in the lab cluster. The Central is made up two main deployments:</p>
 </div>
@@ -475,6 +532,27 @@ You can request in RHPDS the environment already installed (including the demo) 
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="_rhacs_central_requirements"><a class="anchor" href="#_rhacs_central_requirements"></a>RHACS Central requirements</h3>
+<div class="paragraph">
+<p>Central uses a database referred as Central DB (PostgreSQL 13) and both Central and PostgreSQL require persistent storage. SSD storage is recommended for best performance but different storage can be used as well.</p>
+</div>
+<div class="paragraph">
+<p>RHACS requires external access to:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://definitions.stackrox.io">definitions.stackrox.io</a> for downloading updated vulnerability definitions.</p>
+</li>
+<li>
+<p><a href="https://collector-modules.stacrox.io">collector-modules.stackrox.io</a> to download updated kernel support packages.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_rhacs_central_deployment"><a class="anchor" href="#_rhacs_central_deployment"></a>RHACS Central deployment</h3>
 <div class="paragraph">
 <p>Log in to your OpenShift cluster and create a new <code>stackrox</code> namespace (using the web console or the cli as follows). We will install our components here.</p>
 </div>
@@ -516,6 +594,19 @@ spec:
         minReplicas: 2
         replicas: 3
     scannerComponent: Enabled</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This step is not required if you are using the Cloud Service for Red Hat Advanced Cluster Security for Kubernetes (ACS).
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
