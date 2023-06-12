@@ -97,6 +97,9 @@
     <a class="nav-link" href="#config_acs_securedcluster">Configuration of the RHACS Secured Cluster </a>
   </li>
   <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#deploy_acs_manually">Deploying ACS manually</a>
+  </li>
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#deploy_demo_acs">Deploying Demo in RHACS</a>
   </li>
   <li class="nav-item" data-depth="2">
@@ -933,6 +936,211 @@ Check the settings of the <a href="https://docs.openshift.com/acs/installing/ins
 </div>
 </li>
 </ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deploy_acs_manually"><a class="anchor" href="#deploy_acs_manually"></a>Deploying ACS manually</h3>
+<div class="paragraph">
+<p>We have seen how to deploy ACS using the web user interface but, sometimes it is necessary to automate the deployment using tools such ansible for instance.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s see how to manually, using the CLI, we can deploy ACS so we will be able to automate it with any tool.</p>
+</div>
+<div class="paragraph">
+<p>First we need to create a namespace to deploy the ACS operator:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project rhacs-operator</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We need to create the operator group creating the following yaml file:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  apiVersion: operators.coreos.com/v1
+  kind: OperatorGroup
+  metadata:
+    name: rhacs-operator
+    namespace: rhacs-operator</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Apply the file to create the operator group:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f acs-operator-group.yaml -n rhacs-operator</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create the subscription yaml file:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: rhacs-operator
+  namespace: rhacs-operator
+  labels:
+    operators.coreos.com/rhacs-operator.rhacs-operator: ''
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: stable
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Apply the subscription file:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f subscription.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At this moment the ACS operator will be installing. It will take sometime to install, not much a few seconds.</p>
+</div>
+<div class="paragraph">
+<p>Now we need to deploy central, so the first thing is to create the namespace:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project stackrox</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following is an example of the central custom resource:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: platform.stackrox.io/v1alpha1
+kind: Central
+metadata:
+  name: stackrox-central-services
+  namespace: stackrox
+spec:
+  central:
+    exposure:
+      loadBalancer:
+        enabled: false
+        port: 443
+      nodePort:
+        enabled: false
+      route:
+        enabled: true
+    persistence:
+      persistentVolumeClaim:
+        claimName: stackrox-db
+  egress:
+    connectivityPolicy: Online
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: Enabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 3
+    scannerComponent: Enabled</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create the custom resource:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f stackrox-central-services.yaml -n stackrox</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Central will be deployed. You can check it:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n stackrox -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you will need to get the ACS admin password:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc -n stackrox get secret central-htpasswd -o jsonpath="{.data['password']}" | base64 -d</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and the ACS Central console URL:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc -n stackrox get routes/central -o jsonpath='{.spec.host}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once the ACS Central is deployed we will need to add clusters to ACS. To add the cluster where we have deployed Central to ACS we need to download the <a href="https://mirror.openshift.com/pub/rhacs/assets/4.0.2/bin/Linux/roxctl">roxctl</a> command.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You will need to download the version matching the ACS version you have deployed. You can also use a containerized version, but in this workshop we will use the command line tool.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We use the <em>roxctl</em> to create the init bundle:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">roxctl -e &lt;ACS CONSOLE URL&gt;:443 central init-bundles generate demo-cluster --insecure-skip-tls-verify --output-secrets /tmp/demo-cluster.yaml --password &lt;ACS ADMIN PASSWORD&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Apply the init bundle:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc -n stackrox apply -f /tmp/demo-cluster.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The secured cluster resource yaml file:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: platform.stackrox.io/v1alpha1
+kind: SecuredCluster
+metadata:
+  name: acs-secured-cluster-services
+  namespace: stackrox
+spec:
+  admissionControl:
+    listenOnCreates: true
+    listenOnEvents: true
+    listenOnUpdates: true
+  clusterName: demo-cluster
+  perNode:
+    collector:
+      collection: EBPF
+      imageFlavor: Regular
+    taintToleration: TolerateTaints</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"> oc -n stackrox apply -f secured-cluster.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After that the cluster will have been included in ACS.</p>
 </div>
 </div>
 </div>
